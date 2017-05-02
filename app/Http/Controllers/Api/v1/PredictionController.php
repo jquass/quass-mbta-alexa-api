@@ -60,7 +60,7 @@ class PredictionController extends BaseController
                     $destination = $this->vocalizationManager->getDestination($destinationVocalization);
                     $return->direction = $this->directionManager->getDirection($stop, $destination);
                 }
-                // @TODO Create Prediction
+                // @TODO Create and store Prediction
                 $code = 201;
                 break;
 
