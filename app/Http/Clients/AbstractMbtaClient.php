@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1;
+namespace App\Http\Clients;
 
 use GuzzleHttp\Client;
-use Laravel\Lumen\Routing\Controller as BaseController;
 
-class AbstractMbtaController extends BaseController
+class AbstractMbtaClient
 {
 
     protected static $defaultPath = '';
@@ -29,7 +28,7 @@ class AbstractMbtaController extends BaseController
      * @param null|string $path
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function makeGetRequest($queryParams = [], $path = null)
+    public function request($queryParams = [], $path = null)
     {
         $client = new Client();
         return $client->request('GET', $this->getPath($path),
