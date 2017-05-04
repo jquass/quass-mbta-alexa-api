@@ -3,17 +3,17 @@
 use \Flynsarmy\CsvSeeder\CsvSeeder;
 
 /**
- * Class RoutesTableSeeder
+ * Class StopsTableSeeder
  */
-class RoutesTableSeeder extends CsvSeeder
+class StopsTableSeeder extends CsvSeeder
 {
     /**
-     * RoutesTableSeeder constructor.
+     * StopsTableSeeder constructor.
      */
     public function __construct()
     {
-        $this->table = 'routes';
-        $this->filename = base_path().'/database/seeds/csvs/routes.csv';
+        $this->table = 'stops';
+        $this->filename = base_path() . '/database/seeds/csvs/stops.csv';
     }
 
     /**

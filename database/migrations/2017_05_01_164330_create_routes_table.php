@@ -19,7 +19,6 @@ class CreateRoutesTable extends Migration
             $table->string('mbta_route_name');
             $table->string('mbta_route_type');
             $table->string('mbta_mode_name');
-            $table->timestamps();
         });
     }
 
