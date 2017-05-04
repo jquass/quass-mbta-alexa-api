@@ -18,7 +18,6 @@ class CreateDirectionsTable extends Migration
             $table->bigInteger('route_id')->unsigned();
             $table->string('mbta_direction_id');
             $table->string('mbta_direction_name');
-            $table->timestamps();
         });
     }
 

@@ -2,6 +2,9 @@
 
 use Illuminate\Database\Seeder;
 
+/**
+ * Class DatabaseSeeder
+ */
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -12,6 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call(RoutesTableSeeder::class);
-        $this->call(StopsAndDirectionsTablesSeeder::class);
+        $this->call(DirectionsTableSeeder::class);
+        $this->call(StopsTableSeeder::class);
     }
 }

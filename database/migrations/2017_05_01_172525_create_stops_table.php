@@ -22,7 +22,6 @@ class CreateStopsTable extends Migration
             $table->string('mbta_stop_name');
             $table->string('mbta_parent_station');
             $table->string('mbta_parent_station_name');
-            $table->timestamps();
         });
     }
 
