@@ -1,7 +1,9 @@
 {
-  "name": "laravel/lumen",
-  "description": "The Laravel Lumen Framework.",
+  "name": "jquass/mbta-alexa-api",
+  "description": "An MBTA API interface for Alexa.",
   "keywords": [
+    "mbta",
+    "alexa",
     "framework",
     "laravel",
     "lumen"
