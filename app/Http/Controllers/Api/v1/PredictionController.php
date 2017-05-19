@@ -2,31 +2,26 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Http\Clients\MbtaPredictionClient;
-use App\Managers\DirectionManager;
+use App\Managers\PredictionManager;
 use App\Managers\VocalizationManager;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class PredictionController extends BaseController
 {
-    private $directionManager;
-    private $predictionClient;
+    private $predictionManager;
     private $vocalizationManager;
 
     /**
      * PredictionController constructor.
-     * @param DirectionManager $directionManager
-     * @param MbtaPredictionClient $predictionClient
+     * @param PredictionManager $predictionManager
      * @param VocalizationManager $vocalizationManager
      */
     public function __construct(
-        DirectionManager $directionManager,
-        MbtaPredictionClient $predictionClient,
+        PredictionManager $predictionManager,
         VocalizationManager $vocalizationManager
     ) {
-        $this->directionManager = $directionManager;
-        $this->predictionClient = $predictionClient;
+        $this->predictionManager = $predictionManager;
         $this->vocalizationManager = $vocalizationManager;
     }
 
@@ -43,35 +38,17 @@ class PredictionController extends BaseController
             ]
         );
 
-        $stop = $this->vocalizationManager->getStop($request->input('stop'));
-        $response = $this->predictionClient->request(
-            [
-                'stop' => $stop,
-            ]
+        $stops = $this->vocalizationManager->getStops(
+            $request->input('stop'),
+            $request->input('destination', null)
         );
 
-        $return = json_decode($response->getBody());
-
-        switch ($response->getStatusCode()) {
-
-            case 200: // All good
-                $destinationVocalization = $request->input('destination', null);
-                if (!is_null($destinationVocalization)) {
-                    $destination = $this->vocalizationManager->getDestination($destinationVocalization);
-                    $return->direction = $this->directionManager->getDirection($stop, $destination);
-                }
-                // @TODO Create and store Prediction
-                $code = 201;
-                break;
-
-            case 404: // Stop not found
-                $code = 404;
-                break;
-
-            case 401: // API Key is not set
-            default:  // Something went wrong
-                $code = 502;
-                break;
+        if ($stops->isEmpty()) {
+            $return = ['error' => 'Vocalization did not match any stop.'];
+            $code = 404;
+        } else {
+            $return = $this->predictionManager->createPredictions($stops);
+            $code = 201;
         }
 
         return response()->json($return, $code);

@@ -12,7 +12,7 @@ class DirectionsTableSeeder extends CsvSeeder
      */
     public function __construct()
     {
-        $this->table = 'stops';
+        $this->table = 'directions';
         $this->filename = base_path() . '/database/seeds/csvs/directions.csv';
     }
 
