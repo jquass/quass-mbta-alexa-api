@@ -25,8 +25,9 @@ class PredictionManager
     public function createPredictions($stops)
     {
         $predictions = [];
-        foreach ($stops as $stop) {
-            $response = $this->predictionClient->request(['stop' => $stop->mbta_stop_id]);
+        $mbtaStopIds = $stops->pluck('mbta_stop_id')->unique();
+        foreach ($mbtaStopIds as $mbtaStopId) {
+            $response = $this->predictionClient->request(['stop' => $mbtaStopId]);
             if ($response->getStatusCode() == 200) {
                 $prediction = json_decode($response->getBody());
                 if (!empty($prediction)) {
