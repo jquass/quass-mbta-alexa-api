@@ -17,7 +17,7 @@ class CreateVocalizationsTable extends Migration
             $table->increments('id');
             $table->bigInteger('stop_id')->unsigned()->nullable();
             $table->bigInteger('direction_id')->unsigned()->nullable();
-            $table->string('map');
+            $table->string('handle');
         });
     }
 

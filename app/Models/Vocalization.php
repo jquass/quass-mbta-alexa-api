@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $id
  * @property integer $stop_id
  * @property integer $direction_id
- * @property string $map
+ * @property string $handle
  */
 class Vocalization extends Model
 {

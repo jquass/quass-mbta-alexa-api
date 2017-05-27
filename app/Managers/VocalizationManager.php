@@ -15,43 +15,41 @@ use Illuminate\Support\Collection;
 class VocalizationManager
 {
     /**
-     * @param string $stopMap
-     * @param string|null $destinationMap
+     * @param string $stopHandle
+     * @param string|null $destinationHandle
      * @return Collection|Stop[]
      */
-    public function getStops($stopMap, $destinationMap = null)
+    public function getStops($stopHandle, $destinationHandle = null)
     {
         $stops = Stop::with('direction')
-            ->whereHas('vocalizations', function ($query) use ($stopMap) {
-                $query->where('map', $stopMap);
+            ->whereHas('vocalizations', function ($query) use ($stopHandle) {
+                $query->where('handle', $stopHandle);
             })
             ->get();
 
-        return $this->filterStops($stops, $destinationMap);
+        return $this->filterStops($stops, $destinationHandle);
     }
 
     /**
      * @param Collection $stops
-     * @param string|null $destinationMap
+     * @param string|null $destinationHandle
      * @return Collection
      */
-    private function filterStops($stops, $destinationMap = null)
+    private function filterStops($stops, $destinationHandle = null)
     {
-
-
-        if ($stops->count() > 1 && !empty($destinationMap)) {
+        if ($stops->count() > 1 && !empty($destinationHandle)) {
 
             /**
              * Direction matching
              */
             $routeIds = $stops->pluck('route_id')->unique();
-            $stops = $this->filterByDirection($stops, $routeIds, $destinationMap);
+            $stops = $this->filterByDirection($stops, $routeIds, $destinationHandle);
 
             if ($stops->count() > 1) {
                 /**
                  * Stop matching
                  */
-                $stops = $this->filterByStop($stops, $routeIds, $destinationMap);
+                $stops = $this->filterByStop($stops, $routeIds, $destinationHandle);
 
                 // @TODO route matching
             }
@@ -65,15 +63,15 @@ class VocalizationManager
     /**
      * @param Collection $stops
      * @param Collection $routeIds
-     * @param string|null $destinationMap
+     * @param string|null $destinationHandle
      * @return Collection
      */
-    private function filterByDirection($stops, $routeIds, $destinationMap = null)
+    private function filterByDirection($stops, $routeIds, $destinationHandle = null)
     {
         /** @var Collection $directions */
         $directions = Direction::whereIn('route_id', $routeIds)
-            ->whereHas('vocalizations', function ($query) use ($destinationMap) {
-                $query->where('map', $destinationMap);
+            ->whereHas('vocalizations', function ($query) use ($destinationHandle) {
+                $query->where('handle', $destinationHandle);
             })
             ->get();
 
@@ -90,15 +88,15 @@ class VocalizationManager
     /**
      * @param Collection $stops
      * @param Collection $routeIds
-     * @param string|null $destinationMap
+     * @param string|null $destinationHandle
      * @return Collection
      */
-    private function filterByStop($stops, $routeIds, $destinationMap = null)
+    private function filterByStop($stops, $routeIds, $destinationHandle = null)
     {
         /** @var Collection $destinationStops */
         $destinationStops = Stop::whereIn('route_id', $routeIds)
-            ->whereHas('vocalizations', function ($query) use ($destinationMap) {
-                $query->where('map', $destinationMap);
+            ->whereHas('vocalizations', function ($query) use ($destinationHandle) {
+                $query->where('handle', $destinationHandle);
             })
             ->get();
 
