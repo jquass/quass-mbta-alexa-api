@@ -18,4 +18,9 @@ class Route extends Model
     public $timestamps = false;
 
     protected $table = 'routes';
+
+    public function vocalizations()
+    {
+        return $this->hasMany(Vocalization::class);
+    }
 }
