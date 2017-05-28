@@ -33,21 +33,23 @@ class PredictionController extends BaseController
     {
         $this->validate($request,
             [
-                'stop' => 'required',
-                'destination' => '',
+                'stop' => 'required|string|exists:vocalizations,handle',
+                'destination' => 'sometimes|string|exists:vocalizations,handle',
+                'type' => 'sometimes|string'
             ]
         );
 
         $stops = $this->vocalizationManager->getStops(
             $request->input('stop'),
-            $request->input('destination', null)
+            $request->input('filter', null),
+            $request->input('type', null)
         );
 
         if ($stops->isEmpty()) {
             $return = ['error' => 'Vocalization did not match any stop.'];
-            $code = 404;
+            $code = 422;
         } else {
-            $return = $this->predictionManager->createPredictions($stops);
+            $return = $this->predictionManager->createPredictions($stops, $request);
             $code = 201;
         }
 

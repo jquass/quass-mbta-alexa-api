@@ -27,6 +27,11 @@ class Stop extends Model
         return $this->belongsTo(Direction::class);
     }
 
+    public function route()
+    {
+        return $this->belongsTo(Route::class);
+    }
+
     public function vocalizations()
     {
         return $this->hasMany(Vocalization::class);

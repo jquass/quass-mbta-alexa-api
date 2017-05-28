@@ -15,18 +15,53 @@ use Illuminate\Support\Collection;
  */
 class VocalizationManager
 {
+    private static $mbtaRouteTypeSubwayGreen = 0;
+    private static $mbtaRouteTypeSubway = 1;
+    private static $mbtaRouteTypeCommuterRail = 2;
+    private static $mbtaRouteTypeBus = 3;
+    private static $mbtaRouteTypeBoat = 4;
+
+    /**
+     * @var array|null
+     */
+    private $vocalizationTypes = null;
+
+    public function __construct()
+    {
+        $this->vocalizationTypes = [
+            'train' => [self::$mbtaRouteTypeSubwayGreen, self::$mbtaRouteTypeSubway, self::$mbtaRouteTypeCommuterRail],
+            'subway' => [self::$mbtaRouteTypeSubwayGreen, self::$mbtaRouteTypeSubway],
+            'commuter rail' => [self::$mbtaRouteTypeCommuterRail],
+            'bus' => [self::$mbtaRouteTypeBus],
+            'boat' => [self::$mbtaRouteTypeBoat],
+        ];
+    }
+
     /**
      * @param string $stopHandle
      * @param string|null $destinationHandle
+     * @param string|null $type
      * @return Collection|Stop[]
      */
-    public function getStops($stopHandle, $destinationHandle = null)
+    public function getStops($stopHandle, $destinationHandle = null, $type = null)
     {
-        $stops = Stop::with('direction')
-            ->whereHas('vocalizations', function ($query) use ($stopHandle) {
-                $query->where('handle', $stopHandle);
-            })
-            ->get();
+        if (!empty($type) && array_key_exists($type, $this->vocalizationTypes)) {
+            $types = $this->vocalizationTypes[$type];
+            $stops = Stop::with('direction')
+                ->whereHas('route', function ($query) use ($types) {
+                    $query->whereIn('mbta_route_type', $types);
+                })
+                ->whereHas('vocalizations', function ($query) use ($stopHandle) {
+                    $query->where('handle', $stopHandle);
+                })
+                ->get();
+        } else {
+            $stops = Stop::with('direction')
+                ->whereHas('vocalizations', function ($query) use ($stopHandle) {
+                    $query->where('handle', $stopHandle);
+                })
+                ->get();
+        }
 
         return $this->filterStops($stops, $destinationHandle);
     }
@@ -57,7 +92,7 @@ class VocalizationManager
      */
     private function filterByDirection($stops, $routeIds, $destinationHandle)
     {
-        if($stops->pluck('mbta_stop_id')->unique()->count() > 1) {
+        if ($stops->pluck('mbta_stop_id')->unique()->count() > 1) {
             /** @var Collection $directions */
             $directions = Direction::whereIn('route_id', $routeIds)
                 ->whereHas('vocalizations', function ($query) use ($destinationHandle) {
@@ -84,7 +119,7 @@ class VocalizationManager
      */
     private function filterByStop($stops, $routeIds, $destinationHandle)
     {
-        if($stops->pluck('mbta_stop_id')->unique()->count() > 1) {
+        if ($stops->pluck('mbta_stop_id')->unique()->count() > 1) {
             /** @var Collection $destinationStops */
             $destinationStops = Stop::whereIn('route_id', $routeIds)
                 ->whereHas('vocalizations', function ($query) use ($destinationHandle) {
@@ -114,7 +149,7 @@ class VocalizationManager
      */
     private function filterByRoute($stops, $routeIds, $destinationHandle)
     {
-        if($stops->pluck('mbta_stop_id')->unique()->count() > 1) {
+        if ($stops->pluck('mbta_stop_id')->unique()->count() > 1) {
             /** @var Collection $routes */
             $routes = Route::whereIn('id', $routeIds)
                 ->whereHas('vocalizations', function ($query) use ($destinationHandle) {
