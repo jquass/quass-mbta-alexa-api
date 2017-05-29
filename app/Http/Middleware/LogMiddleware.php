@@ -3,8 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Log;
 
-class ExampleMiddleware
+class LogMiddleware
 {
     /**
      * Handle an incoming request.
@@ -15,6 +16,8 @@ class ExampleMiddleware
      */
     public function handle($request, Closure $next)
     {
+        Log::info('request', $request->toArray());
+
         return $next($request);
     }
 }
