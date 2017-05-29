@@ -4,7 +4,7 @@ namespace App\Http\Clients;
 
 use GuzzleHttp\Client;
 
-class AbstractMbtaClient
+abstract class AbstractMbtaClient
 {
 
     protected static $defaultPath = '';
