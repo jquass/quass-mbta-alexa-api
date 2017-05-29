@@ -3,6 +3,7 @@
 namespace App\Managers;
 
 use App\Http\Clients\MbtaPredictionClient;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 class PredictionManager
@@ -20,9 +21,10 @@ class PredictionManager
 
     /**
      * @param Collection $stops
+     * @param Request $request
      * @return \stdClass[]
      */
-    public function createPredictions($stops)
+    public function createPredictions($stops, $request)
     {
         $predictions = [];
         $mbtaStopIds = $stops->pluck('mbta_stop_id')->unique();
@@ -36,7 +38,7 @@ class PredictionManager
             }
         }
 
-        // @TODO Store predictions
+        // @TODO Store predictions with related request information
 
         return $predictions;
     }
